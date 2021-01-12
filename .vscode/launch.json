@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "debug",
             "program": "${file}",
-            "env": {"KUBECONFIG": "C:\\Users\\gerard.cristofol\\.kube\\config"}
+            "env": {"KUBECONFIG": "C:\\Users\\gerard.cristofol\\.kube\\config","KW_CONFIG":"D:\\Workspace\\kubewatch"}
         }
     ]
 }

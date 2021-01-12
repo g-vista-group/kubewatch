@@ -75,31 +75,41 @@ func Start(conf *config.Config, eventHandler handlers.Handler) {
 	var kubeClient kubernetes.Interface
 	var crdClientSet clientV1alpha1.ExampleV1Alpha1Client
 
-	//var config, err = rest.InClusterConfig()
 	if _, err := rest.InClusterConfig(); err != nil {
 		kubeClient = utils.GetClientOutOfCluster()
 		crdClientSet = utils.GetCrdClientOutOfCluster()
 	} else {
 		kubeClient = utils.GetClient()
+		crdClientSet = utils.GetCrdClient()
 	}
-	//fmt.Printf("config found: %+v\n", config)
-	//example.Hello(config)
+
 	v1alpha1.AddToScheme(scheme.Scheme)
 
 	if conf.Resource.Tenant {
+		//		tenants, err := crdClientSet.Tenants("default").List(meta_v1.ListOptions{})
+		//		if err != nil {
+		//			panic(err)
+		//		}
+		//		fmt.Printf("tenants found: %+v\n", tenants)
+		informer := cache.NewSharedIndexInformer(
+			&cache.ListWatch{
+				ListFunc: func(options meta_v1.ListOptions) (runtime.Object, error) {
+					return crdClientSet.Tenants(conf.Namespace).List(options)
+				},
+				WatchFunc: func(options meta_v1.ListOptions) (watch.Interface, error) {
+					return crdClientSet.Tenants(conf.Namespace).Watch(options)
+				},
+			},
+			&v1alpha1.Tenant{},
+			1*time.Minute,
+			cache.Indexers{},
+		)
 
-		//clientSet, err := clientV1alpha1.NewForConfig(config)
-		//if err != nil {
-		//	panic(err)
-		//}
+		c := newResourceController(kubeClient, eventHandler, informer, "tenant")
+		stopCh := make(chan struct{})
+		defer close(stopCh)
 
-		tenants, err := crdClientSet.Tenants("default").List(meta_v1.ListOptions{})
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("tenants found: %+v\n", tenants)
-
+		go c.Run(stopCh)
 	}
 
 	if conf.Resource.Pod {

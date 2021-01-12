@@ -31,6 +31,21 @@ func GetClient() kubernetes.Interface {
 	return clientset
 }
 
+// GetCrdClient returns a k8s clientset to the request from inside of cluster
+func GetCrdClient() clientV1alpha1.ExampleV1Alpha1Client {
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		logrus.Fatalf("Can not get kubernetes config: %v", err)
+	}
+
+	crdClientSet, err := clientV1alpha1.NewForConfig(config)
+	if err != nil {
+		logrus.Fatalf("Can not create kubernetes client: %v", err)
+	}
+
+	return *crdClientSet
+}
+
 func buildOutOfClusterConfig() (*rest.Config, error) {
 	kubeconfigPath := os.Getenv("KUBECONFIG")
 	if kubeconfigPath == "" {

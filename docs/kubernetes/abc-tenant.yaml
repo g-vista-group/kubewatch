@@ -1,0 +1,7 @@
+apiVersion: tbird.vista.co/v1alpha1
+kind: Tenant
+metadata:
+  name: abc
+  namespace: default
+spec:
+  alias: abccin
