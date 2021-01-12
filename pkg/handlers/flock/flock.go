@@ -26,8 +26,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/bitnami-labs/kubewatch/config"
-	kbEvent "github.com/bitnami-labs/kubewatch/pkg/event"
+	"github.com/g-vista-group/kubewatch/config"
+	kbEvent "github.com/g-vista-group/kubewatch/pkg/event"
 )
 
 var flockColors = map[string]string{

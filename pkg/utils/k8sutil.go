@@ -3,13 +3,14 @@ package utils
 import (
 	"os"
 
+	clientV1alpha1 "github.com/g-vista-group/kubewatch/api/clientset"
 	"github.com/sirupsen/logrus"
 	apps_v1 "k8s.io/api/apps/v1"
 	batch_v1 "k8s.io/api/batch/v1"
 	api_v1 "k8s.io/api/core/v1"
 	ext_v1beta1 "k8s.io/api/extensions/v1beta1"
-	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	rbac_v1beta1 "k8s.io/api/rbac/v1beta1"
+	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -51,6 +52,21 @@ func GetClientOutOfCluster() kubernetes.Interface {
 	}
 
 	return clientset
+}
+
+// GetCrdClientOutOfCluster returns a k8s clientset to the request from outside of cluster
+func GetCrdClientOutOfCluster() clientV1alpha1.ExampleV1Alpha1Client {
+	config, err := buildOutOfClusterConfig()
+	if err != nil {
+		logrus.Fatalf("Can not get kubernetes config: %v", err)
+	}
+
+	crdClientSet, err := clientV1alpha1.NewForConfig(config)
+	if err != nil {
+		logrus.Fatalf("Can not get kubernetes config: %v", err)
+	}
+
+	return *crdClientSet
 }
 
 // GetObjectMetaData returns metadata of a given k8s object

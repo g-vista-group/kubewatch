@@ -22,8 +22,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/bitnami-labs/kubewatch/config"
-	"github.com/bitnami-labs/kubewatch/pkg/client"
+	"github.com/g-vista-group/kubewatch/config"
+	"github.com/g-vista-group/kubewatch/pkg/client"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

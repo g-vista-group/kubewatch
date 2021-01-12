@@ -56,6 +56,7 @@ type Resource struct {
 	Secret                bool `json:"secret"`
 	ConfigMap             bool `json:"configmap"`
 	Ingress               bool `json:"ing"`
+	Tenant                bool `json:"tenant"`
 }
 
 // Config struct contains kubewatch configuration
@@ -177,6 +178,8 @@ func (c *Config) Load() error {
 
 // CheckMissingResourceEnvvars will read the environment for equivalent config variables to set
 func (c *Config) CheckMissingResourceEnvvars() {
+	// TODO make this dependant on the environment
+	c.Resource.Tenant = true
 	if !c.Resource.DaemonSet && os.Getenv("KW_DAEMONSET") == "true" {
 		c.Resource.DaemonSet = true
 	}

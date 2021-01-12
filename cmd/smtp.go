@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/bitnami-labs/kubewatch/pkg/handlers/smtp"
+	"github.com/g-vista-group/kubewatch/pkg/handlers/smtp"
 	"github.com/spf13/cobra"
 )
 

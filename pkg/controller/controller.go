@@ -23,12 +23,15 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/bitnami-labs/kubewatch/config"
-	"github.com/bitnami-labs/kubewatch/pkg/event"
-	"github.com/bitnami-labs/kubewatch/pkg/handlers"
-	"github.com/bitnami-labs/kubewatch/pkg/utils"
+	clientV1alpha1 "github.com/g-vista-group/kubewatch/api/clientset"
+	"github.com/g-vista-group/kubewatch/config"
+	"github.com/g-vista-group/kubewatch/pkg/event"
+	"github.com/g-vista-group/kubewatch/pkg/handlers"
+	"github.com/g-vista-group/kubewatch/pkg/utils"
+
 	"github.com/sirupsen/logrus"
 
+	"github.com/g-vista-group/kubewatch/api/types/v1alpha1"
 	apps_v1 "k8s.io/api/apps/v1"
 	batch_v1 "k8s.io/api/batch/v1"
 	api_v1 "k8s.io/api/core/v1"
@@ -40,6 +43,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
@@ -69,12 +73,35 @@ type Controller struct {
 // Start prepares watchers and run their controllers, then waits for process termination signals
 func Start(conf *config.Config, eventHandler handlers.Handler) {
 	var kubeClient kubernetes.Interface
+	var crdClientSet clientV1alpha1.ExampleV1Alpha1Client
 
+	//var config, err = rest.InClusterConfig()
 	if _, err := rest.InClusterConfig(); err != nil {
 		kubeClient = utils.GetClientOutOfCluster()
+		crdClientSet = utils.GetCrdClientOutOfCluster()
 	} else {
 		kubeClient = utils.GetClient()
 	}
+	//fmt.Printf("config found: %+v\n", config)
+	//example.Hello(config)
+	v1alpha1.AddToScheme(scheme.Scheme)
+
+	if conf.Resource.Tenant {
+
+		//clientSet, err := clientV1alpha1.NewForConfig(config)
+		//if err != nil {
+		//	panic(err)
+		//}
+
+		tenants, err := crdClientSet.Tenants("default").List(meta_v1.ListOptions{})
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("tenants found: %+v\n", tenants)
+
+	}
+
 	if conf.Resource.Pod {
 		informer := cache.NewSharedIndexInformer(
 			&cache.ListWatch{

@@ -1,8 +1,9 @@
-module github.com/bitnami-labs/kubewatch
+module github.com/g-vista-group/kubewatch
 
 go 1.14
 
 require (
+	github.com/bitnami-labs/kubewatch v0.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.4.2 // indirect

@@ -1,2 +1,4 @@
 .idea
 kubewatch
+vendor
+vendor/*
